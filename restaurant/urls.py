@@ -21,4 +21,5 @@ from home.views import my_restaurant
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('restaurant/', my_restaurant, name='restaurant'),
+    path('', include('booking.urls')),  # Connects booking app's URLs
 ]

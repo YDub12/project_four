@@ -1,0 +1,59 @@
+{% extends 'booking/base.html' %}
+
+{% block title %}Home | MyRestaurant{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron text-center bg-light p-5">
+    <h1 class="display-4">Welcome to MyRestaurant</h1>
+    <p class="lead">Enjoy delicious food in a cozy atmosphere.</p>
+    <a href="{% url 'reservations' %}" class="btn btn-primary btn-lg">Reserve a Table</a>
+</div>
+
+<!-- About Section -->
+<section class="mt-5 text-center">
+    <h2>About Us</h2>
+    <p class="lead">We serve the finest dishes made with love. Visit us for an unforgettable experience.</p>
+</section>
+
+<!-- Menu Section -->
+<section class="mt-5">
+    <h2 class="text-center">Our Menu</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://source.unsplash.com/400x300/?food" class="card-img-top" alt="Dish">
+                <div class="card-body">
+                    <h5 class="card-title">Grilled Steak</h5>
+                    <p class="card-text">$25</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://source.unsplash.com/400x300/?pasta" class="card-img-top" alt="Dish">
+                <div class="card-body">
+                    <h5 class="card-title">Creamy Pasta</h5>
+                    <p class="card-text">$18</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="https://source.unsplash.com/400x300/?dessert" class="card-img-top" alt="Dish">
+                <div class="card-body">
+                    <h5 class="card-title">Chocolate Cake</h5>
+                    <p class="card-text">$8</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reservation Section -->
+<section class="mt-5 text-center">
+    <h2>Book a Table</h2>
+    <p>Reserve your table online to enjoy a wonderful dining experience.</p>
+    <a href="{% url 'reservations' %}" class="btn btn-success">Make a Reservation</a>
+</section>
+{% endblock %}
