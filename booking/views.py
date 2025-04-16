@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import Reservation
+from .forms import ReservationForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
@@ -9,11 +12,13 @@ def home(request):
 def menu(request):
     return render(request, 'booking/menu.html')
 
-def reservations(request):
-    return render(request, 'booking/reservations.html')
+def booking(request):
+    return render(request, "booking/booking.html")
 
 def contact(request):
-    return render(request, 'booking/contact.html')
+    return render(request, "booking/contact.html", {
+        "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY
+    })
 
 def contact(request):
     errors = []
@@ -50,3 +55,18 @@ def contact(request):
             return render(request, "booking/contact.html", {"success": True})
 
     return render(request, "booking/contact.html", {"errors": errors, "error_fields": error_fields})
+
+
+@login_required
+def booking(request):
+    if request.method == "POST":
+        form = ReservationForm(request.POST, user=request.user)
+        if form.is_valid():
+            reservation = form.save(commit=False)
+            reservation.user = request.user  # Assign logged-in user
+            reservation.save()
+            return redirect('booking_success')  # Redirect to success page
+    else:
+        form = ReservationForm(user=request.user)
+
+    return render(request, "booking/booking.html", {"form": form})
