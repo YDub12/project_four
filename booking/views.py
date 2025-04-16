@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Reservation
@@ -70,3 +70,6 @@ def booking(request):
         form = ReservationForm(user=request.user)
 
     return render(request, "booking/booking.html", {"form": form})
+
+def booking_success(request):
+    return render(request, "booking/booking_success.html")
