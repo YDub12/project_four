@@ -13,7 +13,6 @@ class ReservationForm(forms.ModelForm):
         fields = ['table', 'reservation_date', 'reservation_time', 'status']
         widgets = {
             'reservation_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -23,20 +22,44 @@ class ReservationForm(forms.ModelForm):
         if user:
             self.fields['table'].queryset = Table.objects.filter(restaurant__id=1)
 
-        self.fields['reservation_time'].choices = self.generate_time_slots()
+        date = self.data.get('reservation_date') or self.initial.get('reservation_date')
+        table_id = self.data.get('table') or self.initial.get('table')
+
+        self.fields['reservation_time'].choices = self.generate_time_slots(date, table_id)
     
-    def generate_time_slots(self):
+    def generate_time_slots(self, reservation_date, table_id):
         start = datetime.time(12, 0)
         end = datetime.time(22, 0)
         step = datetime.timedelta(minutes=15)
 
+        # Default to all slots if no date/table selected yet
+        if not reservation_date or not table_id:
+            return self.full_day_slots(start, end, step)
+
+        # Get all booked times for that table on the selected date
+        booked_times = Reservation.objects.filter(
+            table_id=table_id,
+            reservation_date=reservation_date
+        ).values_list('reservation_time', flat=True)
+
+            # Build list of 1-hour blocked slots
+        blocked = set()
+        for time in booked:
+            time_dt = datetime.datetime.combine(datetime.date.today(), time)
+            # Block 1 hour range (15 mins before and 45 after)
+            for i in range(-1, 4):  # 5 slots: -15, 0, +15, +30, +45
+                blocked_time = (time_dt + datetime.timedelta(minutes=15 * i)).time()
+                blocked.add(blocked_time)
+
+    def full_day_slots(self, start, end, step):
+        slots = []
         current = datetime.datetime.combine(datetime.date.today(), start)
         end_dt = datetime.datetime.combine(datetime.date.today(), end)
 
-        times = []
         while current <= end_dt:
-            time_str = current.time().strftime('%H:%M')
-            times.append((time_str, time_str))
+            time_only = current.time()
+            time_str = time_only.strftime('%H:%M')
+            slots.append((time_str, time_str))
             current += step
 
-        return times
+        return slots

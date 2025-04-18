@@ -63,6 +63,7 @@ def booking(request):
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.user = request.user  # Assign logged-in user
+            reservation.status = 'pending'  # Default status
             reservation.save()
             return redirect('booking_success')  # Redirect to success page
     else:
