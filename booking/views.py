@@ -57,7 +57,6 @@ def contact(request):
     return render(request, "booking/contact.html", {"errors": errors, "error_fields": error_fields})
 
 
-@login_required
 def booking(request):
     if request.method == "POST":
         form = ReservationForm(request.POST, user=request.user)
