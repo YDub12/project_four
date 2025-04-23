@@ -1,5 +1,7 @@
 {% extends 'booking/base.html' %}
 
+{% load static %}
+
 {% block title %}Home | MyRestaurant{% endblock %}
 
 {% block content %}
@@ -22,28 +24,28 @@
     <div class="row">
         <div class="col-md-4">
             <div class="card">
-                <img src="https://source.unsplash.com/400x300/?food" class="card-img-top" alt="Dish">
+                <img src="{% static 'booking\static\Peppers.webp' %}" class="card-img-top" alt="Stuffed Peppers">
+                <div class="card-body">
+                    <h5 class="card-title">Stuffed Peppers</h5>
+                    <p class="card-text">£7.50</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{% static 'booking/ribeye-steak.webp' %}" class="card-img-top" alt="Grilled Steak">
                 <div class="card-body">
                     <h5 class="card-title">Grilled Steak</h5>
-                    <p class="card-text">$25</p>
+                    <p class="card-text">£24</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card">
-                <img src="https://source.unsplash.com/400x300/?pasta" class="card-img-top" alt="Dish">
-                <div class="card-body">
-                    <h5 class="card-title">Creamy Pasta</h5>
-                    <p class="card-text">$18</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <img src="https://source.unsplash.com/400x300/?dessert" class="card-img-top" alt="Dish">
+                <img src="{% static 'booking/chocolate-cake.webp' %}" class="card-img-top" alt="Chocolate Cake">
                 <div class="card-body">
                     <h5 class="card-title">Chocolate Cake</h5>
-                    <p class="card-text">$8</p>
+                    <p class="card-text">£8</p>
                 </div>
             </div>
         </div>
