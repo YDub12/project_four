@@ -8,11 +8,20 @@ class ReservationForm(forms.ModelForm):
         widget = forms.Select(attrs={'class': 'form-select'}),
         label="Time"
     )
+    
+    guest_count = forms.IntegerField(
+        min_value=1,
+        max_value=20,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        label="Number of Guests"
+    )
+
     class Meta:
         model = Reservation
-        fields = ['table', 'reservation_date', 'reservation_time', 'status']
+        fields = ['name','table', 'reservation_date', 'reservation_time', 'guest_count', 'status']
         widgets = {
             'reservation_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):

@@ -8,6 +8,11 @@
         {% csrf_token %}
         
         <div class="mb-3">
+            <label for="id_name" class="form-label">Your Name</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
             <label for="id_table" class="form-label">Select Table</label>
             {{ form.table }}
         </div>
@@ -20,6 +25,11 @@
         <div class="mb-3">
             <label for="id_reservation_time" class="form-label">Time</label>
             {{ form.reservation_time }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_guest_count" class="form-label">Number of Guests</label>
+            {{ form.guest_count }}
         </div>
 
         <div class="mb-3">

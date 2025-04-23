@@ -8,6 +8,7 @@ class Restaurant(models.Model):
     location = models.CharField(max_length=255)
     contact_number = models.CharField(max_length=15)
     opening_hours = models.CharField(max_length=100)
+    
 
     def __str__(self):
         return self.name
@@ -27,10 +28,12 @@ class Reservation(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=100, default = 'Guest')
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     reservation_date = models.DateField()
     reservation_time = models.TimeField()
+    guest_count = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
