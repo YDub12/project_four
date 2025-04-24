@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Reservation
-from .forms import ReservationForm
+from .forms import ReservationForm, ContactForm
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -73,3 +73,11 @@ def booking(request):
 
 def booking_success(request):
     return render(request, "booking/booking_success.html")
+
+def contact(request):
+    form = ContactForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('contact')  
+
+    return render(request, 'booking/contact.html', {'form': form})
