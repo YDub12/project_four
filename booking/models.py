@@ -27,7 +27,6 @@ class Reservation(models.Model):
         ('pending', 'Pending'),
         ('cancelled', 'Cancelled'),
     ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100, default = 'Guest')
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
@@ -37,4 +36,4 @@ class Reservation(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
-        return f"Reservation by {self.customer.name} on {self.reservation_date} at {self.reservation_time}"
+        return f"Reservation by {self.name} on {self.reservation_date} at {self.reservation_time}"
