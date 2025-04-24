@@ -37,8 +37,20 @@ def contact(request):
     form = ContactForm(request.POST or None)
 
     if form.is_valid():
-        form.save()
-        messages.success(request, "Thanks for reaching out! We will be in touch")
-        return redirect('contact')  
+        contact = form.save()  # Save to database
 
-    return render(request, 'booking/contact.html', {'form': form})
+        # Send email to restaurant/admin
+        send_mail(
+            subject=f"New Contact Message: {contact.subject}",
+            message=f"From: {contact.name} <{contact.email}>\n\n{contact.message}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["gozj3ybw@students.codeinstitute.net"],  
+        )
+
+        messages.success(request, "Thanks for reaching out! We will be in touch.")
+        return redirect('contact')
+
+    return render(request, 'booking/contact.html', {
+        'form': form,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+    })
