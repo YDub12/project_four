@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Reservation
@@ -6,6 +6,7 @@ from .forms import ReservationForm, ContactForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 def home(request):
@@ -69,7 +70,40 @@ def get_available_times(request):
 
     return JsonResponse({'times': times})
 
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  
+            return redirect('dashboard') 
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
+
 @login_required
 def dashboard(request):
     reservations = Reservation.objects.filter(user=request.user).order_by('reservation_date', 'reservation_time')
     return render(request, 'booking/dashboard.html', {'reservations': reservations})
+
+def edit_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
+
+    if request.method == 'POST':
+        form = ReservationForm(request.POST, instance=reservation, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Reservation updated successfully.")
+            return redirect('dashboard')
+    else:
+        form = ReservationForm(instance=reservation, user=request.user)
+
+    return render(request, 'booking/edit_reservation.html', {'form': form})
+
+def cancel_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
+    reservation.status = 'cancelled'
+    reservation.save()
+    messages.success(request, "Your reservation has been cancelled.")
+    return redirect('dashboard')

@@ -12,9 +12,13 @@
                     <div>
                         <strong>{{ r.reservation_date }}</strong> at {{ r.reservation_time }}<br>
                         Table {{ r.table.table_number }} ({{ r.guest_count }} guests)
+                        <br><span class="badge bg-secondary">{{ r.status|capfirst }}</span>
                     </div>
-                    <span class="badge bg-secondary">{{ r.status|capfirst }}</span>
-                </li>
+                    <div>
+                        <a href="{% url 'edit_reservation' r.id %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                        <a href="{% url 'cancel_reservation' r.id %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                    </div>
+            </li>
             {% endfor %}
         </ul>
     {% else %}
