@@ -1,0 +1,24 @@
+{% extends 'booking/base.html' %}
+{% block title %}Dashboard | Yuri's Trattoria{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">My Reservations</h2>
+    
+    {% if reservations %}
+        <ul class="list-group">
+            {% for r in reservations %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ r.reservation_date }}</strong> at {{ r.reservation_time }}<br>
+                        Table {{ r.table.table_number }} ({{ r.guest_count }} guests)
+                    </div>
+                    <span class="badge bg-secondary">{{ r.status|capfirst }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center">You don’t have any reservations yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -68,3 +68,8 @@ def get_available_times(request):
     times = [time for time, label in time_choices]
 
     return JsonResponse({'times': times})
+
+@login_required
+def dashboard(request):
+    reservations = Reservation.objects.filter(user=request.user).order_by('reservation_date', 'reservation_time')
+    return render(request, 'booking/dashboard.html', {'reservations': reservations})
