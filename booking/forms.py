@@ -1,6 +1,7 @@
 from django import forms
 from .models import Reservation, Table, Contact
 import datetime
+from django.core.exceptions import ValidationError
 
 class ReservationForm(forms.ModelForm):
     reservation_time = forms.ChoiceField(
@@ -41,25 +42,36 @@ class ReservationForm(forms.ModelForm):
         end = datetime.time(22, 0)
         step = datetime.timedelta(minutes=15)
 
-        # Default to all slots if no date/table selected yet
+        # If no date/table selected, return all slots
         if not reservation_date or not table_id:
             return self.full_day_slots(start, end, step)
 
-        # Get all booked times for that table on the selected date
         booked_times = Reservation.objects.filter(
             table_id=table_id,
             reservation_date=reservation_date
         ).values_list('reservation_time', flat=True)
 
-            # Build list of 1-hour blocked slots
         blocked = set()
-        for time in booked:
+        for time in booked_times:
             time_dt = datetime.datetime.combine(datetime.date.today(), time)
-            # Block 1 hour range (15 mins before and 45 after)
-            for i in range(-1, 4):  # 5 slots: -15, 0, +15, +30, +45
+            for i in range(0, 6):  # Block 90 mins = 6 x 15min
                 blocked_time = (time_dt + datetime.timedelta(minutes=15 * i)).time()
                 blocked.add(blocked_time)
 
+        slots = []
+
+        current = datetime.datetime.combine(datetime.date.today(), start)
+        end_dt = datetime.datetime.combine(datetime.date.today(), end)
+
+        while current <= end_dt:
+            time_only = current.time()
+            time_str = time_only.strftime('%H:%M')
+            if time_only not in blocked:
+                slots.append((time_str, time_str))
+            current += step
+
+        return slots 
+    
     def full_day_slots(self, start, end, step):
         slots = []
         current = datetime.datetime.combine(datetime.date.today(), start)
@@ -72,6 +84,37 @@ class ReservationForm(forms.ModelForm):
             current += step
 
         return slots
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        table = cleaned_data.get('table')
+        reservation_date = cleaned_data.get('reservation_date')
+        reservation_time_str = cleaned_data.get('reservation_time')
+
+        if not (table and reservation_date and reservation_time_str):
+            return cleaned_data
+
+        try:
+            reservation_time = datetime.datetime.strptime(reservation_time_str, '%H:%M').time()
+        except (TypeError, ValueError):
+            raise ValidationError("Invalid reservation time format.")
+
+        reservation_start = datetime.datetime.combine(reservation_date, reservation_time)
+        reservation_end = reservation_start + datetime.timedelta(minutes=90)
+
+        existing_reservations = Reservation.objects.filter(
+            table=table,
+            reservation_date=reservation_date
+        )
+
+        for existing in existing_reservations:
+            existing_start = datetime.datetime.combine(existing.reservation_date, existing.reservation_time)
+            existing_end = existing_start + datetime.timedelta(minutes=90)
+
+            if reservation_start < existing_end and reservation_end > existing_start:
+                raise ValidationError("This table is already booked during the selected time.")
+
+        return cleaned_data
     
 class ContactForm(forms.ModelForm):
     class Meta:

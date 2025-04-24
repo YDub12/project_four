@@ -5,6 +5,7 @@ from .models import Reservation
 from .forms import ReservationForm, ContactForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 
 # Create your views here.
 def home(request):
@@ -54,3 +55,16 @@ def contact(request):
         'form': form,
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     })
+
+def get_available_times(request):
+    table_id = request.GET.get('table_id')
+    date = request.GET.get('reservation_date')
+
+    if not table_id or not date:
+        return JsonResponse({'times': []})
+
+    form = ReservationForm()
+    time_choices = form.generate_time_slots(date, table_id)
+    times = [time for time, label in time_choices]
+
+    return JsonResponse({'times': times})

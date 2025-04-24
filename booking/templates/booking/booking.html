@@ -1,5 +1,7 @@
 {% extends "booking/base.html" %}
 
+{% load widget_tweaks %}
+
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center">Make a Reservation</h2>
@@ -14,17 +16,21 @@
 
         <div class="mb-3">
             <label for="id_table" class="form-label">Select Table</label>
-            {{ form.table }}
+            {{ form.table|add_class:"js-table" }}
         </div>
-
+        
         <div class="mb-3">
             <label for="id_reservation_date" class="form-label">Date</label>
-            {{ form.reservation_date }}
+            {{ form.reservation_date|add_class:"js-date" }}
         </div>
-
+        
         <div class="mb-3">
             <label for="id_reservation_time" class="form-label">Time</label>
-            {{ form.reservation_time }}
+            <select name="reservation_time" id="id_reservation_time" class="form-select js-time">
+                {% for value, label in form.fields.reservation_time.choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
         </div>
 
         <div class="mb-3">
