@@ -30,7 +30,10 @@ class ReservationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if user:
-            self.fields['table'].queryset = Table.objects.filter(restaurant__id=1)
+                tables = Table.objects.filter(restaurant__id=1)
+                self.fields['table'].queryset = tables
+
+                self.fields['table'].label_from_instance = lambda obj: f"Table {obj.table_number} ({obj.capacity} seats)"
 
         date = self.data.get('reservation_date') or self.initial.get('reservation_date')
         table_id = self.data.get('table') or self.initial.get('table')
